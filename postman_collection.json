@@ -1,0 +1,257 @@
+{
+  "info": {
+    "_postman_id": "c1f7823b-5a12-4f3b-8255-a22675908b89",
+    "name": "Chat Backend API - Codes For Tomorrow",
+    "description": "Complete Postman collection for testing the Chat Backend with PostgreSQL & Firebase Firestore",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "chatId",
+      "value": "chat_veerendra_aayushi",
+      "type": "string"
+    },
+    {
+      "key": "messageId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "0. List Seeded Users",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/user/list",
+          "host": ["{{baseUrl}}"],
+          "path": ["user", "list"]
+        }
+      }
+    },
+    {
+      "name": "1. Create or Get Chat",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.chatId) {",
+              "    pm.collectionVariables.set('chatId', jsonData.chatId);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userAId\": \"usr_veerendra\",\n  \"userBId\": \"usr_aayushi\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/chat/create",
+          "host": ["{{baseUrl}}"],
+          "path": ["chat", "create"]
+        }
+      }
+    },
+    {
+      "name": "2. Send Message",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.id) {",
+              "    pm.collectionVariables.set('messageId', jsonData.id);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"senderId\": \"usr_veerendra\",\n  \"text\": \"Hello Aayushi! Testing message flow.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/chat/{{chatId}}/message/send",
+          "host": ["{{baseUrl}}"],
+          "path": ["chat", "{{chatId}}", "message", "send"]
+        }
+      }
+    },
+    {
+      "name": "3. Get Messages",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/chat/{{chatId}}/messages?limit=50",
+          "host": ["{{baseUrl}}"],
+          "path": ["chat", "{{chatId}}", "messages"],
+          "query": [
+            {
+              "key": "limit",
+              "value": "50"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "4. Mark Message Read",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"usr_aayushi\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/chat/{{chatId}}/message/{{messageId}}/read",
+          "host": ["{{baseUrl}}"],
+          "path": ["chat", "{{chatId}}", "message", "{{messageId}}", "read"]
+        }
+      }
+    },
+    {
+      "name": "5. Update Last Seen Message",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"userId\": \"usr_aayushi\",\n  \"messageId\": \"{{messageId}}\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/chat/{{chatId}}/lastseen",
+          "host": ["{{baseUrl}}"],
+          "path": ["chat", "{{chatId}}", "lastseen"]
+        }
+      }
+    },
+    {
+      "name": "6. List User Chats",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/user/usr_veerendra/chats",
+          "host": ["{{baseUrl}}"],
+          "path": ["user", "usr_veerendra", "chats"]
+        }
+      }
+    },
+    {
+      "name": "Bonus - Create Group Chat",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"creatorId\": \"usr_veerendra\",\n  \"name\": \"Engineering Leads\",\n  \"memberIds\": [\"usr_aayushi\", \"usr_rahul\", \"usr_alex\"]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/chat/group/create",
+          "host": ["{{baseUrl}}"],
+          "path": ["chat", "group", "create"]
+        }
+      }
+    },
+    {
+      "name": "Bonus - Edit Message",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"senderId\": \"usr_veerendra\",\n  \"text\": \"Hello Aayushi! Testing message edit (Updated).\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/chat/{{chatId}}/message/{{messageId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["chat", "{{chatId}}", "message", "{{messageId}}"]
+        }
+      }
+    },
+    {
+      "name": "Bonus - Delete Message",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"senderId\": \"usr_veerendra\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/chat/{{chatId}}/message/{{messageId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["chat", "{{chatId}}", "message", "{{messageId}}"]
+        }
+      }
+    }
+  ]
+}
+
